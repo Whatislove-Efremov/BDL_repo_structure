@@ -1,0 +1,84 @@
+version: "3.9"
+
+services:
+  # PostgreSQL Database Service
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-bigdatalab}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - postgres_backups:/backups
+    ports:
+      - "5432:5432"
+    networks:
+      - dev_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-bigdatalab}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # pgAdmin - web interface for PostgreSQL management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - dev_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # JupyterLab - data science environment
+  jupyterlab:
+    image: jupyter/datascience-notebook:latest
+    container_name: jupyterlab
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+      JUPYTER_TOKEN: ""
+    volumes:
+      - jupyter_data:/home/jovyan/work
+    ports:
+      - "8888:8888"
+    networks:
+      - dev_network
+    entrypoint: >
+      bash -c "
+        pip install --quiet --no-cache-dir psycopg2-binary sqlalchemy pandas &&
+        /usr/local/bin/start-notebook.sh
+          --NotebookApp.token=''
+          --NotebookApp.password=''
+          --NotebookApp.ip='0.0.0.0'
+          --NotebookApp.allow_origin='*'
+      "
+    restart: unless-stopped
+
+# Define volumes for persistent data storage
+volumes:
+  postgres_data:
+    driver: local
+  postgres_backups:
+    driver: local
+  pgadmin_data:
+    driver: local
+  jupyter_data:
+    driver: local
+
+# Shared network for all services
+networks:
+  dev_network:
+    driver: bridge

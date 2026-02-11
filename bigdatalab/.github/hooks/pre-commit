@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Pre-commit hook for code quality checks
+
+echo "Running pre-commit checks..."
+
+# Run ruff linter
+echo "Checking code with ruff..."
+uv run ruff check . || {
+    echo "❌ Ruff check failed. Please fix the issues before committing."
+    exit 1
+}
+
+# Run ruff formatter check
+echo "Checking code formatting..."
+uv run ruff format --check . || {
+    echo "❌ Code formatting check failed. Run 'uv run ruff format .' to fix."
+    exit 1
+}
+
+# Run tests
+echo "Running tests..."
+uv run pytest || {
+    echo "❌ Tests failed. Please fix the tests before committing."
+    exit 1
+}
+
+echo "✅ All pre-commit checks passed!"
+exit 0
