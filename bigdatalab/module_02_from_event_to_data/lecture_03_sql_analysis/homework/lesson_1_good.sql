@@ -1,6 +1,8 @@
--- Часть 1: JOIN (Связывание данных)
--- Задача 1: Вывести для каждой продажи название продукта, его категорию и магазин (предполагается shops.address и связь идёт через employee -> shop)
+-- Lesson 1: SQL Analysis Fundamentals
+-- Good Implementation
 
+-- Part 1: JOIN (Data Linking)
+-- Task 1: Display for each sale the product name, category, and store address
 SELECT s.sales_id, p.product_name AS item_name, c.category_name AS category, sh.address
 FROM sales s, products p, categories c, employees e, shops sh
 WHERE s.product_id = p.product_id
@@ -8,27 +10,24 @@ AND p.category_id = c.category_id
 AND s.employee_id = e.employee_id
 AND e.shop_id = sh.shop_id;
 
--- Часть 2: WHERE (Фильтрация данных)
--- Задача 1: Вывести все магазины расположенные в 'Poland'
-
+-- Part 2: WHERE (Data Filtering)
+-- Task 1: Display all stores located in 'Poland'
 SELECT s.shop_id, s.address, ci.city_name, co.country_name AS country
 FROM shops s, cities ci, countries co
 WHERE s.city_id = ci.city_id
 AND ci.country_id = co.country_id
 AND co.country_name = 'Poland';
 
--- Задача 2: Вывести все транзакции с суммой продажи выше 1500 (total_price > 1500) для продуктов класса B (class = 'B'), выполнить сортировку по номеру транзакции
-
+-- Task 2: Display transactions with sales amount above 1500 for class B products, sorted by transaction number
 SELECT s.transaction_number, p.product_name, s.total_price AS amount, s.customer_id, s.sales_timestamp
 FROM sales s, products p
 WHERE s.product_id = p.product_id
-AND s.total_price > 1500 
+AND s.total_price > 1500
 AND p.class = 'B'
 ORDER BY s.transaction_number;
 
--- Часть 3: GROUP BY
--- Задача 1: Вывести количество магазинов (Shops) в каждой стране и отсортировать по количеству магазинов по убыванию
-
+-- Part 3: GROUP BY (Aggregation)
+-- Task 1: Show the count of stores in each country, sorted by store count in descending order
 SELECT co.country_name, COUNT(s.shop_id) AS shops_count
 FROM shops s, cities ci, countries co
 WHERE s.city_id = ci.city_id
@@ -36,9 +35,8 @@ AND ci.country_id = co.country_id
 GROUP BY co.country_name
 ORDER BY COUNT(s.shop_id) DESC;
 
--- Часть 4: HAVING
--- Задача 1: Вывести по каждому продукту сумму продаж и средний чек, где сумма продаж выше 400,000.00 . Так же отсортируйте вывод по сумме продаж по убыванию.
-
+-- Part 4: HAVING (Filtering Aggregated Data)
+-- Task 1: For each product show total sales amount and average sale, where total sales exceed 400,000, sorted by total sales in descending order
 SELECT p.product_name,
        SUM(s.total_price) AS total_revenue,
        AVG(s.total_price) AS avg_sale
@@ -48,19 +46,17 @@ GROUP BY p.product_name
 HAVING SUM(s.total_price) > 400000.00
 ORDER BY SUM(s.total_price) DESC;
 
--- Часть 5: SUBQUERIES (Подзапросы)
--- Задача 1: Вывести Имя и Фамилию продавца, который совершил продажу с максимальной суммой и вывести адрес магазина, в котором он работает.
-
+-- Part 5: SUBQUERIES (Complex Data Retrieval)
+-- Task 1: Show the name and surname of the seller who made the highest-value sale and the address of the store where they work
 SELECT e.first_name, e.last_name, sh.address, s.total_price AS max_amount
 FROM sales s, employees e, shops sh
 WHERE s.employee_id = e.employee_id
 AND e.shop_id = sh.shop_id
 AND s.total_price >= ALL (SELECT total_price FROM sales);
 
--- Часть 6: WINDOW FUNCTIONS (Оконные функции)
--- Задача 1: Найти выручку всех магазинов в Германии по месяцам и разницу с предыдущим месяцем. Применить сортировку по месяцам по возрастанию.
-
-SELECT 
+-- Part 6: WINDOW FUNCTIONS (Analytical Calculations)
+-- Task 1: Find revenue of all German stores by month and difference with previous month, sorted by month in ascending order
+SELECT
     DATE_TRUNC('month', TO_TIMESTAMP(sales_timestamp, 'YYYY-MM-DD HH24:MI:SS')) AS sale_month,
     SUM(s.total_price) AS monthly_revenue,
     LAG(SUM(s.total_price), 1) OVER (ORDER BY DATE_TRUNC('month', TO_TIMESTAMP(sales_timestamp, 'YYYY-MM-DD HH24:MI:SS'))) AS previous_month_revenue,
@@ -74,13 +70,12 @@ AND co.country_name = 'Germany'
 GROUP BY DATE_TRUNC('month', TO_TIMESTAMP(sales_timestamp, 'YYYY-MM-DD HH24:MI:SS'))
 ORDER BY DATE_TRUNC('month', TO_TIMESTAMP(sales_timestamp, 'YYYY-MM-DD HH24:MI:SS'));
 
--- Часть 7: Финал
--- Для каждого магазина рассчитать агрегаты продаж и аналитические показатели в разрезе страны.
-
+-- Part 7: COMPREHENSIVE ANALYSIS TASK
+-- For each store, calculate sales aggregates and analytical metrics by country
 WITH shop_sales AS (
     SELECT
         sh.shop_id,
-        sh.address AS shop_address,
+        sh.shop_address,
         co.country_name AS country,
         COUNT(s.sales_id) AS total_sales_count,
         SUM(s.total_price) AS total_sales_amount
@@ -89,18 +84,18 @@ WITH shop_sales AS (
     AND ci.country_id = co.country_id
     AND e.shop_id = sh.shop_id
     AND s.employee_id = e.employee_id
-    GROUP BY sh.shop_id, sh.address, co.country_name
+    GROUP BY sh.shop_id, sh.shop_address, co.country_name
     HAVING COUNT(s.sales_id) >= 2
 ),
 country_totals AS (
-    SELECT 
+    SELECT
         country,
         SUM(total_sales_amount) AS country_total_sales
     FROM shop_sales
     GROUP BY country
 ),
 final_result AS (
-    SELECT 
+    SELECT
         ss.country,
         ss.shop_id,
         ss.shop_address,
@@ -111,7 +106,7 @@ final_result AS (
     FROM shop_sales ss
     JOIN country_totals ct ON ss.country = ct.country
 )
-SELECT 
+SELECT
     country,
     shop_id,
     shop_address,
@@ -119,9 +114,9 @@ SELECT
     total_sales_amount,
     country_total_sales,
     country_sales_share,
-    (SELECT COUNT(*) + 1 
-     FROM final_result fr2 
-     WHERE fr2.country = fr.country 
+    (SELECT COUNT(*) + 1
+     FROM final_result fr2
+     WHERE fr2.country = fr.country
      AND fr2.total_sales_amount > fr.total_sales_amount) AS sales_rank_in_country
 FROM final_result fr
 ORDER BY country, sales_rank_in_country;
