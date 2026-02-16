@@ -1,8 +1,8 @@
--- Lesson 1: SQL Analysis Fundamentals
--- Good Implementation
+-- Урок 1: Основы SQL-анализа
+-- Хорошая реализация
 
--- Part 1: JOIN (Data Linking)
--- Task 1: Display for each sale the product name, category, and store address
+-- Часть 1: JOIN (Соединение данных)
+-- Задача 1: Отобразить для каждой продажи название продукта, категорию и адрес магазина
 SELECT s.sales_id, p.product_name AS item_name, c.category_name AS category, sh.address
 FROM sales s, products p, categories c, employees e, shops sh
 WHERE s.product_id = p.product_id
@@ -10,15 +10,15 @@ AND p.category_id = c.category_id
 AND s.employee_id = e.employee_id
 AND e.shop_id = sh.shop_id;
 
--- Part 2: WHERE (Data Filtering)
--- Task 1: Display all stores located in 'Poland'
+-- Часть 2: WHERE (Фильтрация данных)
+-- Задача 1: Отобразить все магазины, расположенные в 'Poland'
 SELECT s.shop_id, s.address, ci.city_name, co.country_name AS country
 FROM shops s, cities ci, countries co
 WHERE s.city_id = ci.city_id
 AND ci.country_id = co.country_id
 AND co.country_name = 'Poland';
 
--- Task 2: Display transactions with sales amount above 1500 for class B products, sorted by transaction number
+-- Задача 2: Отобразить транзакции с суммой продаж выше 1500 для продуктов класса B, отсортированные по номеру транзакции
 SELECT s.transaction_number, p.product_name, s.total_price AS amount, s.customer_id, s.sales_timestamp
 FROM sales s, products p
 WHERE s.product_id = p.product_id
@@ -26,8 +26,8 @@ AND s.total_price > 1500
 AND p.class = 'B'
 ORDER BY s.transaction_number;
 
--- Part 3: GROUP BY (Aggregation)
--- Task 1: Show the count of stores in each country, sorted by store count in descending order
+-- Часть 3: GROUP BY (Агрегация)
+-- Задача 1: Показать количество магазинов в каждой стране, отсортированное по количеству магазинов по убыванию
 SELECT co.country_name, COUNT(s.shop_id) AS shops_count
 FROM shops s, cities ci, countries co
 WHERE s.city_id = ci.city_id
@@ -35,8 +35,8 @@ AND ci.country_id = co.country_id
 GROUP BY co.country_name
 ORDER BY COUNT(s.shop_id) DESC;
 
--- Part 4: HAVING (Filtering Aggregated Data)
--- Task 1: For each product show total sales amount and average sale, where total sales exceed 400,000, sorted by total sales in descending order
+-- Часть 4: HAVING (Фильтрация агрегированных данных)
+-- Задача 1: Для каждого продукта показать общую сумму продаж и среднюю продажу, где общая сумма продаж превышает 400 000, отсортированную по общей сумме продаж по убыванию
 SELECT p.product_name,
        SUM(s.total_price) AS total_revenue,
        AVG(s.total_price) AS avg_sale
@@ -46,16 +46,16 @@ GROUP BY p.product_name
 HAVING SUM(s.total_price) > 400000.00
 ORDER BY SUM(s.total_price) DESC;
 
--- Part 5: SUBQUERIES (Complex Data Retrieval)
--- Task 1: Show the name and surname of the seller who made the highest-value sale and the address of the store where they work
+-- Часть 5: ПОДЗАПРОСЫ (Сложное получение данных)
+-- Задача 1: Показать имя и фамилию продавца, совершившего продажу с наибольшей стоимостью, и адрес магазина, в котором он работает
 SELECT e.first_name, e.last_name, sh.address, s.total_price AS max_amount
 FROM sales s, employees e, shops sh
 WHERE s.employee_id = e.employee_id
 AND e.shop_id = sh.shop_id
 AND s.total_price >= ALL (SELECT total_price FROM sales);
 
--- Part 6: WINDOW FUNCTIONS (Analytical Calculations)
--- Task 1: Find revenue of all German stores by month and difference with previous month, sorted by month in ascending order
+-- Часть 6: ОКОННЫЕ ФУНКЦИИ (Аналитические вычисления)
+-- Задача 1: Найти выручку всех немецких магазинов по месяцам и разницу с предыдущим месяцем, отсортированную по месяцам по возрастанию
 SELECT
     DATE_TRUNC('month', TO_TIMESTAMP(sales_timestamp, 'YYYY-MM-DD HH24:MI:SS')) AS sale_month,
     SUM(s.total_price) AS monthly_revenue,
@@ -70,8 +70,8 @@ AND co.country_name = 'Germany'
 GROUP BY DATE_TRUNC('month', TO_TIMESTAMP(sales_timestamp, 'YYYY-MM-DD HH24:MI:SS'))
 ORDER BY DATE_TRUNC('month', TO_TIMESTAMP(sales_timestamp, 'YYYY-MM-DD HH24:MI:SS'));
 
--- Part 7: COMPREHENSIVE ANALYSIS TASK
--- For each store, calculate sales aggregates and analytical metrics by country
+-- Часть 7: КОМПЛЕКСНОЕ АНАЛИТИЧЕСКОЕ ЗАДАНИЕ
+-- Для каждого магазина рассчитать агрегаты продаж и аналитические метрики по странам
 WITH shop_sales AS (
     SELECT
         sh.shop_id,

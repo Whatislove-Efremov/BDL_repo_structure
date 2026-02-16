@@ -1,81 +1,81 @@
--- Lesson 2: SQL Data Processing Operations
--- Good Implementation
+-- Урок 2: Операции обработки данных SQL
+-- Хорошая реализация
 
--- Part 1 - DML Operations
--- Insert two new products (with possible issues: e.g., not specifying all fields)
+-- Часть 1 - Операции DML
+-- Вставить два новых продукта (с возможными проблемами: например, не указывая все поля)
 INSERT INTO products
 (product_name, price, category_id, class, resistant, is_allergic, vitality_days)
 VALUES
 ('Organic Mango Box', 19.99, 1, 'B', 'No', 'No', 7),
 ('Bananas Family Pack', 5.49, 1, 'C', 'No', 'No', 5);
 
--- Select products where is_allergic = 'Yes' and vitality_days > 0
+-- Выбрать продукты, где is_allergic = 'Yes' и vitality_days > 0
 SELECT *
 FROM products
 WHERE is_allergic = 'Yes'
   AND vitality_days > 0;
 
--- Update is_allergic for 'Bananas Family Pack' to 'Yes'
+-- Обновить is_allergic для 'Bananas Family Pack' на 'Yes'
 UPDATE products
 SET is_allergic = 'Yes'
 WHERE product_name = 'Bananas Family Pack';
 
--- Delete one of the added products
+-- Удалить один из добавленных продуктов
 DELETE FROM products
 WHERE product_name = 'Organic Mango Box';
 
--- Verification of all changes
+-- Проверка всех изменений
 SELECT * FROM products;
 
--- Part 2 - DDL Operations
--- Create table Data_Layers (without constraints initially)
+-- Часть 2 - Операции DDL
+-- Создать таблицу Data_Layers (без ограничений изначально)
 CREATE TABLE data_layers (
     layerid SERIAL,
     layername VARCHAR(50),
     description TEXT
 );
 
--- Add PRIMARY KEY later
+-- Добавить PRIMARY KEY позже
 ALTER TABLE data_layers ADD PRIMARY KEY (layerid);
 
--- Populate the LayerName column with three values: 'Bronze', 'Silver', 'Gold'
+-- Заполнить столбец LayerName тремя значениями: 'Bronze', 'Silver', 'Gold'
 INSERT INTO data_layers (layername, description)
 VALUES
-('Bronze', 'Raw data layer'),
-('Silver', 'Cleaned and transformed data'),
-('Gold', 'Business-ready analytical layer');
+('Bronze', 'Слой необработанных данных'),
+('Silver', 'Очищенные и преобразованные данные'),
+('Gold', 'Готовый к использованию аналитический слой');
 
--- Add manager_email to data_layers (without constraints initially)
+-- Добавить manager_email в data_layers (без ограничений изначально)
 ALTER TABLE data_layers
 ADD COLUMN manager_email VARCHAR(100);
 
--- Add manager_email to shops (without values initially)
+-- Добавить manager_email в shops (без значений изначально)
 ALTER TABLE shops
 ADD COLUMN manager_email VARCHAR(100);
 
--- Fill emails to avoid error when adding UNIQUE constraint
+-- Заполнить email'ы, чтобы избежать ошибки при добавлении UNIQUE ограничения
 UPDATE shops
 SET manager_email = 'manager_' || shop_id || '@eco.com';
 
--- Now add the UNIQUE constraint
+-- Теперь добавить UNIQUE ограничение
 ALTER TABLE shops
 ADD CONSTRAINT unique_manager_email UNIQUE (manager_email);
 
--- Rename address → shop_address
+-- Переименовать address → shop_address
 ALTER TABLE shops
 RENAME COLUMN address TO shop_address;
 
--- Part 3 - DCL Operations
--- Create role (with simpler password)
+-- Часть 3 - Операции DCL
+-- Создать роль (с более простым паролем)
 CREATE ROLE data_engineer_trainee
 LOGIN
 PASSWORD 'password';
 
--- Grant SELECT on Sales
+-- Предоставить SELECT на Sales
 GRANT SELECT ON sales TO data_engineer_trainee;
 
--- Part 4 - Advanced DML with Transactions
--- Increase prices of Dairy by 10% (less efficient way with JOIN)
+-- Часть 4 - Расширенные DML с транзакциями
+-- Увеличить цены на Dairy на 10% (менее эффективный способ с JOIN)
 UPDATE products
 SET price = price * 1.10,
     modify_timestamp = NOW()::text
@@ -83,7 +83,7 @@ FROM categories
 WHERE products.category_id = categories.category_id
   AND categories.category_name = 'Dairy';
 
--- Delete employees without sales (with subquery - less efficient)
+-- Удалить сотрудников без продаж (с подзапросом - менее эффективно)
 DELETE FROM employees
 WHERE NOT EXISTS (
     SELECT 1
@@ -91,7 +91,7 @@ WHERE NOT EXISTS (
     WHERE sales.employee_id = employees.employee_id
 );
 
--- Insert employee and sale in transaction
+-- Вставить сотрудника и продажу в транзакции
 BEGIN;
 
 INSERT INTO employees
@@ -99,7 +99,7 @@ INSERT INTO employees
 VALUES
 ('John', 'A', 'Smith', '1995-05-10', 'M', 1, NOW()::text, 1);
 
--- Insert sale for this employee
+-- Вставить продажу для этого сотрудника
 INSERT INTO sales
 (employee_id, customer_id, product_id, quantity, discount, total_price, sales_timestamp, transaction_number)
 VALUES
@@ -108,15 +108,15 @@ VALUES
 
 COMMIT;
 
--- Part 5 - Functions and Views for Gold Layer
--- Create a function AvgSalesPerEmployee (PL/pgSQL) for calculating the average sales for an employee
+-- Часть 5 - Функции и представления для Gold Layer
+-- Создать функцию AvgSalesPerEmployee (PL/pgSQL) для вычисления средних продаж для сотрудника
 CREATE OR REPLACE FUNCTION AvgSalesPerEmployee(emp_id INT)
 RETURNS NUMERIC AS
 $$
 DECLARE
     avg_sales NUMERIC;
 BEGIN
-    -- Check if employee exists
+    -- Проверить, существует ли сотрудник
     IF NOT EXISTS (SELECT 1 FROM employees WHERE employee_id = emp_id) THEN
         RETURN NULL;
     END IF;
@@ -126,7 +126,7 @@ BEGIN
     FROM sales
     WHERE employee_id = emp_id;
 
-    -- Return 0 if no sales
+    -- Вернуть 0, если нет продаж
     IF avg_sales IS NULL THEN
         RETURN 0;
     ELSE
@@ -135,7 +135,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Create a view FullStatShops for aggregated shop statistics with columns (shop_id, shop_address, country, total_sales_count, total_sales_amount)
+-- Создать представление FullStatShops для агрегированных статистик магазинов со столбцами (shop_id, shop_address, country, total_sales_count, total_sales_amount)
 CREATE OR REPLACE VIEW FullStatShops AS
 SELECT
     sh.shop_id,
@@ -154,15 +154,15 @@ SELECT
      AND s.employee_id = e2.employee_id) AS total_sales_amount
 FROM shops sh;
 
--- Part 6 - Advanced DML Operations
--- Find employees with sales > 1000
+-- Часть 6 - Расширенные DML операции
+-- Найти сотрудников с продажами > 1000
 SELECT employee_id, SUM(total_price) AS total_sales
 FROM sales
 GROUP BY employee_id
 HAVING SUM(total_price) > 1000
 ORDER BY total_sales DESC;
 
--- Update product classification to 'A' for categories with total revenue > 5000 (using cursor - more complex approach)
+-- Обновить классификацию продукта на 'A' для категорий с общей выручкой > 5000 (с использованием курсора - более сложный подход)
 DO $$
 DECLARE
     cat_record RECORD;
@@ -181,7 +181,7 @@ BEGIN
     END LOOP;
 END $$;
 
--- Set modify_timestamp for products without dates
+-- Установить modify_timestamp для продуктов без дат
 UPDATE products
 SET modify_timestamp = NOW()::text
 WHERE modify_timestamp IS NULL

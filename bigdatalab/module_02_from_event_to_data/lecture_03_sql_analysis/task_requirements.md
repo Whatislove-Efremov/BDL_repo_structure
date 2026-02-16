@@ -1,23 +1,23 @@
-# Task Requirements
+# Требования к заданию
 
-## Lecture: SQL Analysis and Data Processing
+## Лекция: Анализ SQL и обработка данных
 
-### Homework Description
-In this homework assignment, students must implement SQL scripts based strictly on the task descriptions.
-The goal is to reinforce the concepts covered in the lecture through practical SQL exercises.
-Tasks are divided into 2 parts:
-1. Two small lessons after each topic.
-2. A comprehensive ETL script after completing the entire SQL section, for analyzing and processing data using SQL.
+### Описание домашнего задания
+В этом домашнем задании студенты должны реализовать SQL-скрипты, строго основываясь на описании задач.
+Цель состоит в том, чтобы закрепить концепции, рассмотренные на лекции, с помощью практических упражнений по SQL.
+Задания разделены на 2 части:
+1. Два небольших урока после каждой темы.
+2. Комплексный ETL-скрипт после прохождения всего раздела SQL для анализа и обработки данных с использованием SQL.
 
-### Requirements
-- Solutions must precisely match the task formulation.
-- All necessary queries, calculations, and outputs must be implemented.
-- Scripts should produce expected results.
-- Only concepts covered in the current lecture should be used.
-- If tasks specify additional constraints (e.g., specific operators or constructs), they must be followed.
+### Требования
+- Решения должны точно соответствовать формулировке задачи.
+- Все необходимые запросы, вычисления и выводы должны быть реализованы.
+- Скрипты должны выдавать ожидаемые результаты.
+- Следует использовать только концепции, рассмотренные на текущей лекции.
+- Если в задачах указаны дополнительные ограничения (например, конкретные операторы или конструкции), их необходимо соблюдать.
 
-### Submission Guidelines
-- Submit SQL files with the ".sql" extension.
-- Scripts must execute without errors.
-- Output must match the expected format.
-- Do not include unnecessary functions that are not required for the task.
+### Руководство по отправке
+- Отправляйте SQL-файлы с расширением ".sql".
+- Скрипты должны выполняться без ошибок.
+- Вывод должен соответствовать ожидаемому формату.
+- Не включайте ненужные функции, которые не требуются для задачи.

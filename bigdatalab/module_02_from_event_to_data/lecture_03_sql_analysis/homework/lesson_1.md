@@ -1,46 +1,46 @@
-# Lesson 1: SQL Analysis Fundamentals
+# Урок 1: Основы SQL-анализа
 
-## Overview
-This lesson focuses on fundamental SQL analysis techniques including JOIN operations, filtering with WHERE clauses, grouping data with GROUP BY, using HAVING clauses for aggregate filtering, subqueries for complex data retrieval, and window functions for analytical calculations.
+## Обзор
+Этот урок посвящен основным методам SQL-анализа, включая операции JOIN, фильтрацию с помощью предложений WHERE, группировку данных с помощью GROUP BY, использование предложений HAVING для фильтрации агрегатов, подзапросы для сложного получения данных и оконные функции для аналитических вычислений.
 
-## Learning Objectives
-Students will practice:
-- JOIN operations to connect related tables
-- WHERE clauses for data filtering
-- GROUP BY for data aggregation
-- HAVING for filtering aggregated data
-- Subqueries for complex data retrieval
-- Window functions for analytical calculations
-- Comprehensive analytical queries combining multiple concepts
+## Цели обучения
+Студенты будут практиковать:
+- Операции JOIN для соединения связанных таблиц
+- Предложения WHERE для фильтрации данных
+- GROUP BY для агрегации данных
+- HAVING для фильтрации агрегированных данных
+- Подзапросы для сложного получения данных
+- Оконные функции для аналитических вычислений
+- Комплексные аналитические запросы, объединяющие несколько концепций
 
-## Tasks
-Complete the following SQL exercises using the EcoMarket dataset:
+## Задания
+Выполните следующие SQL-упражнения, используя набор данных EcoMarket:
 
-### Part 1: JOIN Operations
-- Display for each sale the product name, category, and store address
+### Часть 1: Операции JOIN
+- Отобразить для каждой продажи название продукта, категорию и адрес магазина
 
-### Part 2: WHERE Filtering
-- Display all stores located in 'Poland'
-- Display transactions with sales amount above 1500 for class B products, sorted by transaction number
+### Часть 2: Фильтрация WHERE
+- Отобразить все магазины, расположенные в 'Poland'
+- Отобразить транзакции с суммой продаж выше 1500 для продуктов класса B, отсортированные по номеру транзакции
 
-### Part 3: GROUP BY Aggregation
-- Show the count of stores in each country, sorted by store count in descending order
+### Часть 3: Агрегация GROUP BY
+- Показать количество магазинов в каждой стране, отсортированное по количеству магазинов по убыванию
 
-### Part 4: HAVING Clauses
-- For each product show total sales amount and average sale, where total sales exceed 400,000, sorted by total sales in descending order
+### Часть 4: Предложения HAVING
+- Для каждого продукта показать общую сумму продаж и среднюю продажу, где общая сумма продаж превышает 400 000, отсортированную по общей сумме продаж по убыванию
 
-### Part 5: Subqueries
-- Show the name and surname of the seller who made the highest-value sale and the address of the store where they work
+### Часть 5: Подзапросы
+- Показать имя и фамилию продавца, совершившего продажу с наибольшей стоимостью, и адрес магазина, в котором он работает
 
-### Part 6: Window Functions
-- Find revenue of all German stores by month and difference with previous month, sorted by month in ascending order
+### Часть 6: Оконные функции
+- Найти выручку всех немецких магазинов по месяцам и разницу с предыдущим месяцем, отсортированную по месяцам по возрастанию
 
-### Part 7: Comprehensive Analysis Task
-- For each store, calculate sales aggregates and analytical metrics by country:
-  - Count of sales (COUNT(sales_id))
-  - Total sales amount (SUM(total_price))
-  - Keep only stores with at least 2 sales
-  - Calculate store's share of country's total revenue
-  - Rank stores by sales amount within their country
-  - Compute cumulative revenue by country, sorted by descending store revenue
-  - Sort results by country and store rank
+### Часть 7: Комплексное аналитическое задание
+- Для каждого магазина рассчитать агрегаты продаж и аналитические метрики по странам:
+  - Количество продаж (COUNT(sales_id))
+  - Общая сумма продаж (SUM(total_price))
+  - Оставить только магазины с не менее чем 2 продажами
+  - Рассчитать долю магазина от общей выручки страны
+  - Присвоить ранг магазинам по сумме продаж внутри своей страны
+  - Вычислить накопительную выручку по стране, отсортированную по убыванию выручки магазина
+  - Отсортировать результаты по стране и рангу магазина
